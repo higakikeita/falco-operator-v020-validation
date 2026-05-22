@@ -1,0 +1,14 @@
+# Plugin CRD adding the `json` plugin to Falco at runtime.
+# v0.2.0 hot-reloads plugins via Falco's internal "hot restart" — no pod restart, no detection downtime (~5s observed).
+apiVersion: artifact.falcosecurity.dev/v1alpha1
+kind: Plugin
+metadata:
+  name: json
+  namespace: falco
+spec:
+  ociArtifact:
+    image:
+      repository: falcosecurity/plugins/plugin/json
+      tag: latest
+    registry:
+      name: ghcr.io

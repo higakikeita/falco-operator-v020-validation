@@ -1,0 +1,23 @@
+# Component CRD patch adding a webhook output to Falcosidekick.
+# Demonstrates env var injection via podTemplateSpec — works for any Falcosidekick output type
+# (SLACK_WEBHOOKURL, TEAMS_WEBHOOKURL, ELASTICSEARCH_HOSTPORT, LOKI_HOSTPORT, etc).
+apiVersion: instance.falcosecurity.dev/v1alpha1
+kind: Component
+metadata:
+  name: falcosidekick
+  namespace: falco
+spec:
+  component:
+    type: falcosidekick
+  replicas: 2
+  podTemplateSpec:
+    spec:
+      containers:
+      - name: falcosidekick
+        env:
+        - name: WEBUI_URL
+          value: http://falcosidekick-ui.falco.svc:2802
+        - name: WEBHOOK_ADDRESS
+          value: https://example.invalid/your-webhook-endpoint
+        - name: WEBHOOK_MINIMUMPRIORITY
+          value: notice

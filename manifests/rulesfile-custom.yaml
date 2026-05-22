@@ -1,0 +1,23 @@
+# Rulesfile CRD referencing a private OCI artifact (ECR) with auth Secret.
+# Reconciled by Falco Operator v0.2.0 + artifact-operator sidecar.
+#
+# Prerequisites:
+#   - Secret `ecr-auth` (Opaque) with keys `username` and `password` — see secret-ecr-auth.yaml
+#   - RBAC: falco SA must be able to list/watch/get Secrets — see rbac-falco-secrets.yaml
+#   - falcoctl push of the rules artifact — see rules/ directory
+apiVersion: artifact.falcosecurity.dev/v1alpha1
+kind: Rulesfile
+metadata:
+  name: custom-rules
+  namespace: falco
+spec:
+  ociArtifact:
+    image:
+      repository: falco-rules            # ECR repository name
+      tag: custom-v3                     # change tag to update — but see Finding #13
+    registry:
+      name: <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com
+      auth:
+        secretRef:
+          name: ecr-auth
+  priority: 70

@@ -1,0 +1,20 @@
+# Build artifacts
+*.tar.gz
+
+# Upstream releases — do not redistribute; fetched at runtime
+install.yaml
+quickstart.yaml
+
+# OS noise
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets — never commit
+*.env
+*.pem
+*.key
+**/credentials
+**/kubeconfig*

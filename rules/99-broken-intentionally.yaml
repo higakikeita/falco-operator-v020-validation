@@ -1,0 +1,8 @@
+- required_engine_version: 0.40.0
+
+- rule: Intentionally broken rule
+  desc: This rule has an invalid condition to test Falco rollback behavior.
+  condition: this_is_not_valid_falco_syntax === broken && garbage
+  output: should never fire (proc=%proc.name)
+  priority: WARNING
+  tags: [broken, test]

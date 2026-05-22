@@ -1,0 +1,32 @@
+# EKS cluster used for the Falco Operator v0.2.0 validation.
+# Apply with: eksctl create cluster -f infra/eksctl-cluster.yaml
+#
+# Kubernetes 1.29+ required (Falco Operator v0.2.0 uses native sidecar containers).
+# 1.31 was chosen for stable feature-gate support without bleeding-edge addon issues.
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: falco-operator-validation
+  region: ap-northeast-1
+  version: "1.31"
+  tags:
+    Project: falco-operator-validation
+    Owner: <your-handle>
+    Lifetime: ephemeral
+
+iam:
+  withOIDC: true                            # required for the EBS CSI IRSA below
+
+addons:
+  - name: aws-ebs-csi-driver                # IMPORTANT (Finding #2): EKS 1.31 removed the
+    serviceAccountRoleARN: arn:aws:iam::<ACCOUNT_ID>:role/AmazonEKS_EBS_CSI_DriverRole
+                                            # in-tree EBS provisioner — Redis StatefulSet
+                                            # in the quickstart needs this addon to bind PVCs.
+
+managedNodeGroups:
+  - name: workers
+    instanceType: t3.large
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 2
