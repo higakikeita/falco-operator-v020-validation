@@ -5,6 +5,10 @@ on EKS, focused not on _whether Falco detects_ but on **whether the OCI artifact
 operationally viable** — installation, rule distribution, hot reload, rollback, plugin lifecycle,
 operator upgrade.
 
+Cross-referenced with the official **KubeCon EU 2026 Falco Maintainers Track** talk
+("In Falco's Nest: The Evolution of Cloud Native Runtime Security", Aldo Lacuku / Iacopo Rozzo,
+2026-03-24) — facts confirmed against the maintainers' design intent where relevant.
+
 This repository accompanies the Qiita article _(link TBD)_ and contains:
 
 - The custom Falco rules pushed as OCI artifacts during the validation (`rules/`)
