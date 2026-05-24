@@ -151,7 +151,7 @@ flowchart LR
 2. **metacollector** は単独 Deployment として動き、Kubernetes API をウォッチして pod/namespace/labels を集約、各 Falco の `k8smeta` plugin に gRPC で配信。
 3. Operator 本体は **どの Pod も作らない**。CRD を見て artifact-operator や Component に reconcile を委譲する薄いコントローラー。
 
-![Figure 1. kubectl get crd | grep falco — CRD 5 つが instance / artifact 2 グループに分かれて並ぶ](./screenshots/01-crd-list.png)
+![Figure 1. kubectl get crd | grep falco — CRD 5 つが instance / artifact 2 グループに分かれて並ぶ](https://raw.githubusercontent.com/higakikeita/falco-operator-v020-validation/main/tech-article/screenshots/01-crd-list.png)
 
 > ### この章のポイント
 > - Falco は **kernel-level 検知エンジン**、Helm では rule/plugin/sidekick の lifecycle が分散
@@ -437,7 +437,7 @@ $ kubectl get pod -n falco -l app.kubernetes.io/instance=falco \
 # {"name":"artifact-operator","restartPolicy":"Always",...}
 ```
 
-![Figure 2. Falco container の startup log — 3 plugin と 2 rulesfile が schema validation: ok で並ぶ。modern BPF probe で起動](./screenshots/02-falco-startup.png)
+![Figure 2. Falco container の startup log — 3 plugin と 2 rulesfile が schema validation: ok で並ぶ。modern BPF probe で起動](https://raw.githubusercontent.com/higakikeita/falco-operator-v020-validation/main/tech-article/screenshots/02-falco-startup.png)
 
 ### Finding #4: CRD 2 グループ分離 🟢
 
@@ -465,7 +465,7 @@ Alert payload にこういう field が並ぶ：
 }
 ```
 
-![Figure 3. Falcosidekick UI Events — Total 56,108 alerts、Read sensitive file untrusted (Warning)、field chips に `k8s.ns.name` / `k8s.pod.name` と `k8smeta.ns.name` / `k8smeta.pod.name` が並んで見える — enrichment 2 経路の実証](./screenshots/03-falcosidekick-ui-events.png)
+![Figure 3. Falcosidekick UI Events — Total 56,108 alerts、Read sensitive file untrusted (Warning)、field chips に `k8s.ns.name` / `k8s.pod.name` と `k8smeta.ns.name` / `k8smeta.pod.name` が並んで見える — enrichment 2 経路の実証](https://raw.githubusercontent.com/higakikeita/falco-operator-v020-validation/main/tech-article/screenshots/03-falcosidekick-ui-events.png)
 
 ## 3.2 OCI 配布 (Scenario 3) — 7 連発のハマり
 
@@ -509,7 +509,7 @@ sequenceDiagram
 
 最終的に Rulesfile が `Programmed: True` になる：
 
-![Figure 4. Rulesfile CRD status — ResolvedRefs と Programmed の両方が True、message に "All artifacts sources were programmed successfully"](./screenshots/04-rulesfile-status.png)
+![Figure 4. Rulesfile CRD status — ResolvedRefs と Programmed の両方が True、message に "All artifacts sources were programmed successfully"](https://raw.githubusercontent.com/higakikeita/falco-operator-v020-validation/main/tech-article/screenshots/04-rulesfile-status.png)
 
 ## 3.3 v0.2.0 最大のギャップ — Rule hot reload は未完成（Finding #13 🔴）
 
@@ -569,7 +569,7 @@ flowchart TB
 - **Pod A (`2/2 Running`)** — 既に v5 で起動済み → 内部 hot restart で broken rule をリジェクト → 前 rule で動き続ける（**graceful fallback**）
 - **Pod B (`CrashLoopBackOff`)** — fresh start で broken rule を読む → schema validation で die → fallback なし
 
-![Figure 5. 両 Falco pod が CrashLoopBackOff (RESTARTS=4)、`/etc/falco/rules.d/70-01-custom-rules-oci.yaml: Invalid` で `LOAD_ERR_COMPILE_CONDITION` を投げて die](./screenshots/05-crashloop-broken-rule.png)
+![Figure 5. 両 Falco pod が CrashLoopBackOff (RESTARTS=4)、`/etc/falco/rules.d/70-01-custom-rules-oci.yaml: Invalid` で `LOAD_ERR_COMPILE_CONDITION` を投げて die](https://raw.githubusercontent.com/higakikeita/falco-operator-v020-validation/main/tech-article/screenshots/05-crashloop-broken-rule.png)
 
 つまり broken rule の rollout は **DaemonSet を mixed-state にする**。
 
