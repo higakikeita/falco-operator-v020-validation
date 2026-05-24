@@ -9,7 +9,7 @@ Cross-referenced with the official **KubeCon EU 2026 Falco Maintainers Track** t
 ("In Falco's Nest: The Evolution of Cloud Native Runtime Security", Aldo Lacuku / Iacopo Rozzo,
 2026-03-24) — facts confirmed against the maintainers' design intent where relevant.
 
-This repository accompanies the Qiita article _(link TBD)_ and contains:
+This repository accompanies the Qiita article **[Falco Operator v0.2.0 徹底解説 — 何者で、何を変え、本番に耐えるのか](https://qiita.com/keitah/items/ca2a543ea2b500676250)** and contains:
 
 - The custom Falco rules pushed as OCI artifacts during the validation (`rules/`)
 - Sample CRD manifests for the patterns the official docs do not cover (`manifests/`)
