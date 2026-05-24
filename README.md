@@ -87,7 +87,8 @@ This repository accompanies the Qiita article **[Falco Operator v0.2.0 徹底解
 13. **Hot reload is broken for rule tag changes.** Patching `spec.ociArtifact.image.tag` flips
     the Rulesfile status to `Programmed: True` within ~1 s but the artifact-operator does **not**
     re-pull. The on-disk rules file remains unchanged. Pod restart is required to pick up the new
-    tag — and brings ~45 s of detection downtime.
+    tag — and brings ~45 s of detection downtime. Filed upstream as
+    [falco-operator#337](https://github.com/falcosecurity/falco-operator/issues/337).
 14. Falco's **internal "hot restart"** mechanism falls back gracefully to the previously-loaded
     ruleset when a new rules file fails validation, emitting a Critical `Falco internal: hot restart failure`
     event — useful for monitoring.
