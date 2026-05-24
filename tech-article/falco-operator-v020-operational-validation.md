@@ -62,7 +62,7 @@ flowchart TB
 
 この分離が効くのは「rule を image と同じパイプラインで運べる」ことです。`ghcr.io/your-org/falco-rules:v1.2.3` を push して Rulesfile CRD で参照すれば、それだけで全 Pod に配布される。**Runtime Security as Code** のための前提が CRD レベルで作り込まれています。
 
-> 📸 **スクショ ①** : `kubectl get crd | grep falco` の実行結果。`falcos.instance.*`、`components.instance.*`、`rulesfiles.artifact.*`、`plugins.artifact.*`、`configs.artifact.*` の 5 つが並ぶ絵を貼ってください。
+![スクショ ①: CRD 5 つが instance / artifact 2 グループに分かれて並ぶ](./screenshots/01-crd-list.png)
 
 ### 1.3 全体アーキ — Operator + artifact-operator + metacollector
 
@@ -151,7 +151,7 @@ $ kubectl get pod -n falco -l app.kubernetes.io/instance=falco \
 
 initContainer なのに restartPolicy が Always — これが native sidecar の正体です。
 
-> 📸 **スクショ ②** : Falco の startup log。`Loaded plugin 'container@0.7.1'`、`Loaded plugin 'k8smeta@0.4.1'`、`Loading rules from: /etc/falco/rules.d/50-01-falco-rules-oci.yaml | schema validation: ok` の並びが見える絵。
+![スクショ ②: Falco startup log — 3 plugin と 2 rulesfile が schema validation: ok で並ぶ。modern BPF probe で起動](./screenshots/02-falco-startup.png)
 
 ### 2.4 enrichment が 2 経路ある（Finding #6）
 
@@ -176,7 +176,7 @@ $ kubectl exec -n test nginx -- cat /etc/shadow
 
 実測：scale 0 → 30 でデプロイ直後（pod Ready から ~3 秒）に exec しても、両方とも埋まっていました。
 
-> 📸 **スクショ ③** : falcosidekick-ui の Events 画面か、Falco の JSON log で `k8s.*` と `k8smeta.*` が両方並んでいる絵。
+![スクショ ③: Falcosidekick UI Events 画面。Total 56,108 alerts、Read sensitive file untrusted (Warning)、field chips に `k8s.ns.name` / `k8s.pod.name` と `k8smeta.ns.name` / `k8smeta.pod.name` が並んで見える — enrichment 2 経路の実証](./screenshots/03-falcosidekick-ui-events.png)
 
 ### 2.6 蛇足：Slack 連携は enterprise だと止まる（Finding #17）
 
@@ -238,7 +238,7 @@ status:
     message: All artifacts sources were programmed successfully
 ```
 
-> 📸 **スクショ ④** : この `kubectl get rulesfile custom-rules -o yaml` の status section。
+![スクショ ④: Rulesfile CRD status — ResolvedRefs と Programmed の両方が True、message に "All artifacts sources were programmed successfully"](./screenshots/04-rulesfile-status.png)
 
 ---
 
@@ -318,7 +318,7 @@ flowchart TB
 
 つまり、**broken rule の rollout は DaemonSet を mixed-state にする**：ノードによって検知能力が違う状態が発生する。これは「SOC アラートが特定ノードからだけ来ない」みたいな form で表面化します。
 
-> 📸 **スクショ ⑤** : CrashLoopBackOff になった Falco pod の `kubectl describe` 出力。`Last State: Terminated, Reason: Error, Message: Falco internal: hot restart failure ...` が見える絵。
+![スクショ ⑤: 両 Falco pod が CrashLoopBackOff (RESTARTS=4)、`/etc/falco/rules.d/70-01-custom-rules-oci.yaml: Invalid` で `LOAD_ERR_COMPILE_CONDITION` を投げて die](./screenshots/05-crashloop-broken-rule.png)
 
 ### 3.4 Operator 自体の rolling restart は 11 秒、Falco 無風 ✅
 
