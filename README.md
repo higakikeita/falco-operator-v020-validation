@@ -38,7 +38,7 @@ This repository accompanies the Qiita article _(link TBD)_ and contains:
 | 9 | Plugin lifecycle (`json` plugin add) | ✅ **5 s hot restart, no pod restart** |
 | 10 | Operator upgrade (simulated via rollout-restart) | ✅ 11 s controller swap, Falco unaffected |
 
-## 16 findings worth knowing before you try v0.2.0 in production
+## 17 findings worth knowing before you try v0.2.0 in production
 
 ### Install-time gotchas
 1. **install.yaml CRDs exceed kubectl's 262 KB annotation limit** — `kubectl apply -f install.yaml`
@@ -94,6 +94,12 @@ This repository accompanies the Qiita article _(link TBD)_ and contains:
 16. **Plugin lifecycle is asymmetric with rule lifecycle** — adding a Plugin CRD triggers Falco
     hot-restart and the plugin loads in ~5 s with no pod restart. The same machinery seemingly
     does not fire on Rulesfile tag changes (see #13).
+
+### Org-level operational gotcha
+17. **Enterprise Slack workspaces block self-service `Incoming Webhooks` install** — the most
+    obvious Falcosidekick output (`SLACK_WEBHOOKURL`) requires admin approval. Plan the
+    notification-pipeline ownership before you start, or use webhook.site / PagerDuty / Email
+    while you wait.
 
 ## Reproducing the validation
 

@@ -1,5 +1,5 @@
 ---
-title: Falco Operator v0.2.0 を本番運用しようとしたら 16 個ハマった話 — Runtime Security as Code の現実
+title: Falco Operator v0.2.0 を本番運用しようとしたら 17 個ハマった話 — Runtime Security as Code の現実
 tags:
   - Falco
   - Kubernetes
@@ -14,7 +14,7 @@ slug: falco-operator-v020-operational-validation
 ignorePublish: false
 ---
 
-CNCF Graduated の [Falco](https://falco.org/) は長らく Helm で配布されてきましたが、2026-03-23 リリースの **Falco Operator v0.2.0** が「最初の production-ready 版」を名乗っています。実際に EKS で 10 シナリオ・3 日間ほど触り倒したところ、**16 個の非自明なハマりどころ**が見つかりました。本記事はその検証ログを 3 章に整理した、運用観点のレビューです。
+CNCF Graduated の [Falco](https://falco.org/) は長らく Helm で配布されてきましたが、2026-03-23 リリースの **Falco Operator v0.2.0** が「最初の production-ready 版」を名乗っています。実際に EKS で 10 シナリオ・3 日間ほど触り倒したところ、**17 個の非自明なハマりどころ**が見つかりました。本記事はその検証ログを 3 章に整理した、運用観点のレビューです。
 
 検証コード・マニフェストは [higakikeita/falco-operator-v020-validation](https://github.com/higakikeita/falco-operator-v020-validation) に置いてあります。
 
@@ -177,6 +177,12 @@ $ kubectl exec -n test nginx -- cat /etc/shadow
 実測：scale 0 → 30 でデプロイ直後（pod Ready から ~3 秒）に exec しても、両方とも埋まっていました。
 
 > 📸 **スクショ ③** : falcosidekick-ui の Events 画面か、Falco の JSON log で `k8s.*` と `k8smeta.*` が両方並んでいる絵。
+
+### 2.6 蛇足：Slack 連携は enterprise だと止まる（Finding #17）
+
+`WEBHOOK_ADDRESS` 環境変数を Component CRD で注入すれば webhook.site などへの forward は即動きます。が、**`SLACK_WEBHOOKURL` を取得しに行くと**、enterprise Slack workspace（Sysdig 含む）では `Incoming Webhooks` の app install に **admin 承認が必要**で、開発者が手元で完結できません。
+
+検証のサクサク感とは別問題ですが、本番投入時の「Falcosidekick の output 設定をセットアップする責任者は誰か」を最初に決めておかないと、Runtime Security の通知だけ宙ぶらりんになります。回避策は個人 workspace で webhook を作って検証→本番は admin 経由で発行、または Slack を経由せず PagerDuty / Email / Webhook → 別 hub（Datadog 等）に流す方針に切り替え。
 
 ### 2.5 自作 rule を ECR に置きたい — ここから 7 連発
 
